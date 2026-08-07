@@ -1,0 +1,34 @@
+[
+  {
+    "destination": "Ooty",
+    "state": "Tamil Nadu",
+    "event": "Flower Show / Blooming Season",
+    "start_month": 4,
+    "end_month": 5,
+    "description": "Peak flower blooming season, Ooty Botanical Garden Flower Show held annually."
+  },
+  {
+    "destination": "Munnar",
+    "state": "Kerala",
+    "event": "Neelakurinji Bloom",
+    "start_month": 8,
+    "end_month": 10,
+    "description": "Rare flower that blooms once every 12 years, last major bloom 2018."
+  },
+  {
+    "destination": "Shillong",
+    "state": "Meghalaya",
+    "event": "Cherry Blossom Festival",
+    "start_month": 11,
+    "end_month": 11,
+    "description": "Cherry blossoms bloom across Shillong, annual festival held."
+  },
+  {
+    "destination": "Rishikesh",
+    "state": "Uttarakhand",
+    "event": "International Yoga Festival",
+    "start_month": 3,
+    "end_month": 3,
+    "description": "Week-long yoga festival attracting practitioners worldwide."
+  }
+]
