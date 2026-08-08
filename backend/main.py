@@ -8,8 +8,9 @@ app = FastAPI(title="Tourism Multi-Agent Recommendation API")
 class TripRequest(BaseModel):
     destination: str
     state: str
-    candidate_places: list
+    origin_place: str
     preferences: dict
+    total_budget: float
     num_days: int
     home_language: str
     destination_language: str

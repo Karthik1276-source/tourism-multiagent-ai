@@ -13,7 +13,7 @@ def geocode_place(place_name: str) -> dict:
     """Convert a place name into latitude/longitude using OpenStreetMap Nominatim (free, no key needed)."""
     url = "https://nominatim.openstreetmap.org/search"
     params = {"q": place_name, "format": "json", "limit": 1}
-    headers = {"User-Agent": "tourism-multiagent-ai-fyp"}  # Nominatim requires a User-Agent
+    headers = {"User-Agent": "tourism-multiagent-ai-fyp"}
 
     try:
         response = requests.get(url, params=params, headers=headers, timeout=10)
@@ -49,6 +49,25 @@ def get_travel_time(origin_lat: float, origin_lon: float, dest_lat: float, dest_
             "distance_km": round(summary["distance"] / 1000, 1),
             "duration_minutes": round(summary["duration"] / 60),
         }
+    except requests.exceptions.RequestException as e:
+        return {"success": False, "error": str(e)}
+
+
+def get_route_geometry(origin_lat: float, origin_lon: float, dest_lat: float, dest_lon: float) -> dict:
+    """Get the actual route path (list of coordinates) for drawing on a map, using OpenRouteService."""
+    url = "https://api.openrouteservice.org/v2/directions/driving-car/geojson"
+    headers = {"Authorization": ORS_API_KEY, "Content-Type": "application/json"}
+    body = {
+        "coordinates": [[origin_lon, origin_lat], [dest_lon, dest_lat]]
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=body, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        coords = data["features"][0]["geometry"]["coordinates"]
+        route_points = [[lat, lon] for lon, lat in coords]
+        return {"success": True, "route_points": route_points}
     except requests.exceptions.RequestException as e:
         return {"success": False, "error": str(e)}
 

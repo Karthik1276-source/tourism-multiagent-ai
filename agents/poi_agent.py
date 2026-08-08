@@ -15,17 +15,24 @@ _df.columns = [c.strip() for c in _df.columns]  # clean any stray whitespace in 
 
 def _row_to_poi(row: dict) -> dict:
     """Convert one dataset row into the POI dict shape the rest of the pipeline expects."""
+
+    def clean_str(value, default="N/A"):
+        """Handle NaN (empty cells) safely — pandas gives NaN, not None, for empty strings."""
+        if pd.isna(value):
+            return default
+        return str(value)
+
     return {
-        "name": row["Name"],
-        "area": row["City"],
-        "state": row["State"],
-        "zone": row["Zone"],
-        "tags": [str(row["Type"]).lower(), str(row["Significance"]).lower()],
+        "name": clean_str(row["Name"]),
+        "area": clean_str(row["City"]),
+        "state": clean_str(row["State"]),
+        "zone": clean_str(row["Zone"]),
+        "tags": [clean_str(row["Type"]).lower(), clean_str(row["Significance"]).lower()],
         "entry_fee": float(row["Entrance Fee in INR"]) if pd.notna(row["Entrance Fee in INR"]) else 0,
         "avg_visit_hours": float(row["time needed to visit in hrs"]) if pd.notna(row["time needed to visit in hrs"]) else 1.5,
         "rating": float(row["Google review rating"]) if pd.notna(row["Google review rating"]) else None,
-        "best_time_to_visit": row.get("Best Time to visit", "All"),
-        "weekly_off": row.get("Weekly Off", "None"),
+        "best_time_to_visit": clean_str(row.get("Best Time to visit"), "All"),
+        "weekly_off": clean_str(row.get("Weekly Off"), "None"),
     }
 
 
