@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.context_agent import run_context_agent
 from agents.ranking_agent import run_ranking_agent
 from agents.itinerary_agent import run_itinerary_agent
-from agents.explanation_agent import run_explanation_agent
+from agents.explanation_agent import run_explanation_agent, generate_trip_summary_explanation
 from agents.culture_language_agent import run_culture_language_agent
 from agents.travel_time_agent import run_travel_time_agent, geocode_place
 from agents.budget_agent import run_budget_agent
@@ -24,7 +24,7 @@ def run_pipeline(user_input: dict) -> dict:
         "state": "Tamil Nadu",
         "origin_place": "Ooty Bus Stand",
         "preferences": {"interests": [...], "budget": "medium"},
-        "total_budget": 200,
+        "total_budget": 5000,
         "num_days": 3,
         "home_language": "Tamil",
         "destination_language": "Tamil"
@@ -62,6 +62,7 @@ def run_pipeline(user_input: dict) -> dict:
         else:
             place["google_maps_url"] = google_maps_search_url(place["name"], place["area"])
 
+    # Time-aware itinerary (Morning/Afternoon/Evening grouped, per day)
     itinerary = run_itinerary_agent(budget_result["affordable_places"], user_input["num_days"])
 
     explanations = {
@@ -80,14 +81,21 @@ def run_pipeline(user_input: dict) -> dict:
     else:
         amenities = {"success": False, "hotels": [], "hospitals": [], "pharmacies": []}
 
+    # Rule-based "Why this itinerary?" summary
+    trip_summary = generate_trip_summary_explanation(
+        budget_result["affordable_places"], budget_result["breakdown"], user_input["num_days"]
+    )
+
     return {
         "context": context,
         "all_places_with_travel_and_budget": budget_result["all_places"],
         "affordable_places": budget_result["affordable_places"],
         "total_estimated_cost": budget_result["total_estimated_cost"],
         "budget_remaining": budget_result["budget_remaining"],
+        "budget_breakdown": budget_result["breakdown"],
         "itinerary": itinerary,
         "explanations": explanations,
         "culture_language": culture,
         "amenities": amenities,
+        "trip_summary": trip_summary,
     }
